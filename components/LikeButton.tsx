@@ -4,10 +4,10 @@ import { useEffect, useState } from "react";
 import { AiOutlineHeart, AiFillHeart } from "react-icons/ai";
 import { useRouter } from "next/navigation";
 import { toast } from "react-hot-toast";
-import { useSessionContext } from "@supabase/auth-helpers-react";
 
 import { useUser } from "@/hooks/useUser";
 import useAuthModal from "@/hooks/useAuthModal";
+import { songService } from "@/services/songService";
 
 interface LikeButtonProps {
   songId: string;
@@ -17,9 +17,6 @@ const LikeButton: React.FC<LikeButtonProps> = ({
   songId
 }) => {
   const router = useRouter();
-  const {
-    supabaseClient
-  } = useSessionContext();
   const authModal = useAuthModal();
   const { user } = useUser();
 
@@ -31,20 +28,17 @@ const LikeButton: React.FC<LikeButtonProps> = ({
     }
   
     const fetchData = async () => {
-      const { data, error } = await supabaseClient
-        .from('liked_songs')
-        .select('*')
-        .eq('user_id', user.id)
-        .eq('song_id', songId)
-        .single();
-
-      if (!error && data) {
-        setIsLiked(true);
+      try {
+        const likedSongs = await songService.getLikedSongs(user.id);
+        const isCurrentlyLiked = likedSongs.some((s) => s.id === songId);
+        setIsLiked(isCurrentlyLiked);
+      } catch (error) {
+        console.error("Error fetching liked status:", error);
       }
     }
 
     fetchData();
-  }, [songId, supabaseClient, user?.id]);
+  }, [songId, user?.id]);
 
   const Icon = isLiked ? AiFillHeart : AiOutlineHeart;
 
@@ -53,32 +47,15 @@ const LikeButton: React.FC<LikeButtonProps> = ({
       return authModal.onOpen();
     }
 
-    if (isLiked) {
-      const { error } = await supabaseClient
-        .from('liked_songs')
-        .delete()
-        .eq('user_id', user.id)
-        .eq('song_id', songId)
-
-      if (error) {
-        toast.error(error.message);
-      } else {
-        setIsLiked(false);
+    try {
+      const success = await songService.toggleLike(user.id, songId);
+      
+      if (success) {
+        setIsLiked(!isLiked);
+        toast.success(isLiked ? 'Song unliked' : 'Song liked');
       }
-    } else {
-      const { error } = await supabaseClient
-        .from('liked_songs')
-        .insert({
-          song_id: songId,
-          user_id: user.id
-        });
-
-      if (error) {
-        toast.error(error.message);
-      } else {
-        setIsLiked(true);
-        toast.success('song liked');
-      }
+    } catch (error: any) {
+      toast.error(error.message);
     }
 
     router.refresh();

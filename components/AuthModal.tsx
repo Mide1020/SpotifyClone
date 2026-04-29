@@ -1,36 +1,37 @@
 "use client";
 
 import React, { useEffect } from 'react';
-import { Auth } from '@supabase/auth-ui-react';
-import { ThemeSupa } from '@supabase/auth-ui-shared';
-import { 
-  useSessionContext, 
-  useSupabaseClient
-} from '@supabase/auth-helpers-react';
 import { useRouter } from 'next/navigation';
+import { toast } from 'react-hot-toast';
 
 import useAuthModal from "@/hooks/useAuthModal";
+import { useUser } from "@/hooks/useUser";
 
 import Modal from './Modal';
+import Button from './Button';
 
 const AuthModal = () => {
-  const { session } = useSessionContext();
+  const { user } = useUser();
   const router = useRouter();
   const { onClose, isOpen } = useAuthModal();
-  
-  const supabaseClient = useSupabaseClient();
 
   useEffect(() => {
-    if (session) {
+    if (user) {
       router.refresh();
       onClose();
     }
-  }, [session, router, onClose]);
+  }, [user, router, onClose]);
 
   const onChange = (open: boolean) => {
     if (!open) {
       onClose();
     }
+  }
+
+  const onMockLogin = () => {
+    // This is just a placeholder since useUser is already mocked to return a user
+    toast.success("Log in successful (Mock)");
+    onClose();
   }
 
   return (
@@ -40,23 +41,14 @@ const AuthModal = () => {
       isOpen={isOpen} 
       onChange={onChange} 
     >
-      <Auth
-        supabaseClient={supabaseClient}
-        providers={['github']}
-        magicLink={true}
-        appearance={{
-          theme: ThemeSupa,
-          variables: {
-            default: {
-              colors: {
-                brand: '#404040',
-                brandAccent: '#22c55e'
-              }
-            }
-          }
-        }}
-        theme="dark"
-      />
+      <div className="flex flex-col gap-y-4">
+        <p className="text-neutral-400 text-sm text-center">
+          Authentication is currently mocked for development.
+        </p>
+        <Button onClick={onMockLogin}>
+          Sign in with Github (Mock)
+        </Button>
+      </div>
     </Modal>
   );
 }

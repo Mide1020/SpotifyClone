@@ -1,0 +1,16 @@
+[
+  {
+    "id": "user1",
+    "first_name": "Test",
+    "last_name": "User",
+    "full_name": "Test User",
+    "avatar_url": "https://api.dicebear.com/7.x/avataaars/svg?seed=user1"
+  },
+  {
+    "id": "user2",
+    "first_name": "Jane",
+    "last_name": "Doe",
+    "full_name": "Jane Doe",
+    "avatar_url": "https://api.dicebear.com/7.x/avataaars/svg?seed=user2"
+  }
+]

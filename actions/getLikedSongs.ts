@@ -1,27 +1,21 @@
 import { Song } from "@/type";
-import { createServerComponentClient } from "@supabase/auth-helpers-nextjs";
-import { cookies } from "next/headers";
+import { songService } from "@/services/songService";
+import { userService } from "@/services/userService";
 
 const getLikedSongs = async (): Promise<Song[]> => {
-  const supabase = createServerComponentClient({
-    cookies: cookies
-  });
+  try {
+    const user = await userService.getCurrentUser();
 
-  const {
-    data: { session },
-  } = await supabase.auth.getSession();
+    if (!user) {
+      return [];
+    }
 
-  const { data } = await supabase 
-    .from('liked_songs')
-    .select('*, songs(*)')
-    .eq('user_id', session?.user?.id)
-    .order('created_at', { ascending: false })
-
-  if (!data) return [];
-
-  return data.map((item) => ({
-    ...item.songs
-  }))
+    const songs = await songService.getLikedSongs(user.id);
+    return songs;
+  } catch (error) {
+    console.error("Error fetching liked songs:", error);
+    return [];
+  }
 };
 
 export default getLikedSongs;
