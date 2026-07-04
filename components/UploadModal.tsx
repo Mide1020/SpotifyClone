@@ -52,7 +52,6 @@ const UploadModal = () => {
         return;
       }
 
-      // Simulate upload to backend
       await songService.uploadSong({
         title: values.title,
         author: values.author,

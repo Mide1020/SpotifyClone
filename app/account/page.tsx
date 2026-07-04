@@ -1,13 +1,10 @@
 import Header from "@/components/Header";
-
 import AccountContent from "@/components/AccountContent";
 import AccountName from "@/components/AccountName";
+import MySongsContent from "@/components/MySongsContent";
 import { SlUser } from "react-icons/sl";
-import getSongsByUserId from '@/actions/getSongsByUserId';
-import PageContent from "@/components/PageContent";
 
 const Account = async () => {
-  const userSongs = await getSongsByUserId();
 
   return (
     <div 
@@ -59,11 +56,11 @@ const Account = async () => {
       </Header>
       <AccountContent />
       <div className="mt-7 mb-7 px-6">
-        <div className="flex justify-between items-center">
-          <h1 className="text-white text-2xl font-semibold">Uploaded Songs</h1>
+        <div className="flex justify-between items-center mb-1">
+          <h1 className="text-white text-2xl font-semibold">My Uploaded Songs</h1>
+          <p className="text-neutral-400 text-sm">Click the Delete button to remove a song</p>
         </div>
-
-        <PageContent songs={userSongs} />
+        <MySongsContent />
       </div>
     </div>
   )

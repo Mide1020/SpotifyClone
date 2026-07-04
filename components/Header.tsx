@@ -23,14 +23,14 @@ type Props = {
 const Header = ({ children, className, account }: Props) => {
   const router = useRouter();
   const authModal = useAuthModal();
-  const { user } = useUser();
+  const { user, logout } = useUser();
   const player = usePlayer();
 
-  const handleLogout = async () => {
-    // Mock logout
+  const handleLogout = () => {
+    logout();
     player.reset();
     router.refresh();
-    toast.success('Logged out (Mock)!');
+    toast.success('Logged out successfully!');
   }
 
   return (

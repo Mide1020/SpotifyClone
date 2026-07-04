@@ -13,31 +13,29 @@ interface LikeButtonProps {
   songId: string;
 };
 
-const LikeButton: React.FC<LikeButtonProps> = ({
-  songId
-}) => {
+const LikeButton: React.FC<LikeButtonProps> = ({ songId }) => {
   const router = useRouter();
   const authModal = useAuthModal();
   const { user } = useUser();
 
   const [isLiked, setIsLiked] = useState<boolean>(false);
 
+  // Efficiently check if this single song is liked — no full-list fetch needed
   useEffect(() => {
     if (!user?.id) {
       return;
     }
   
-    const fetchData = async () => {
+    const fetchLikedStatus = async () => {
       try {
-        const likedSongs = await songService.getLikedSongs(user.id);
-        const isCurrentlyLiked = likedSongs.some((s) => s.id === songId);
-        setIsLiked(isCurrentlyLiked);
+        const liked = await songService.checkIsLiked(songId);
+        setIsLiked(liked);
       } catch (error) {
         console.error("Error fetching liked status:", error);
       }
-    }
+    };
 
-    fetchData();
+    fetchLikedStatus();
   }, [songId, user?.id]);
 
   const Icon = isLiked ? AiFillHeart : AiOutlineHeart;
@@ -48,18 +46,15 @@ const LikeButton: React.FC<LikeButtonProps> = ({
     }
 
     try {
-      const success = await songService.toggleLike(user.id, songId);
-      
-      if (success) {
-        setIsLiked(!isLiked);
-        toast.success(isLiked ? 'Song unliked' : 'Song liked');
-      }
+      const nowLiked = await songService.toggleLike(user.id, songId);
+      setIsLiked(nowLiked);
+      toast.success(nowLiked ? 'Song liked' : 'Song unliked');
+      // Only refresh the page on success to update relevant lists
+      router.refresh();
     } catch (error: any) {
-      toast.error(error.message);
+      toast.error(error.message || 'Something went wrong');
     }
-
-    router.refresh();
-  }
+  };
 
   return (
     <button 
@@ -73,6 +68,6 @@ const LikeButton: React.FC<LikeButtonProps> = ({
       <Icon color={isLiked ? '#22c55e' : 'white'} size={25} />
     </button>
   );
-}
+};
 
 export default LikeButton;

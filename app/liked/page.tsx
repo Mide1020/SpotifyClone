@@ -1,15 +1,11 @@
 import Image from "next/image";
 
-import getLikedSongs from "@/actions/getLikedSongs";
 import Header from "@/components/Header";
-
 import LikedContent from "@/components/LikedContent";
 
 export const revalidate = 0;
 
 const Liked = async () => {
-  const songs = await getLikedSongs();
-
   return (
     <div 
       className="
@@ -59,9 +55,10 @@ const Liked = async () => {
           </div>
         </div>
       </Header>
-      <LikedContent songs={songs} />
+      {/* LikedContent fetches liked songs client-side after user authenticates */}
+      <LikedContent songs={[]} />
     </div>
   );
 }
 
-export default Liked;
+export default Liked;

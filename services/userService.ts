@@ -1,21 +1,80 @@
 import { UserDetails } from "@/type";
-import usersMock from "@/mock-data/users.json";
+
+const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000/api/v1";
 
 export const userService = {
-  getUserDetails: async (userId: string): Promise<UserDetails | null> => {
-    await new Promise((resolve) => setTimeout(resolve, 300));
-    const user = usersMock.find((u) => u.id === userId);
-    return (user as any) || null;
+  getCurrentUser: async (token: string) => {
+    try {
+      const response = await fetch(`${API_URL}/auth/me`, {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      });
+      if (!response.ok) return null;
+      const data = await response.json();
+      
+      return {
+        id: data.id,
+        email: data.email,
+        user_metadata: {
+          full_name: data.full_name || `${data.first_name || ""} ${data.last_name || ""}`.trim()
+        }
+      };
+    } catch (error) {
+      console.error("Error in getCurrentUser:", error);
+      return null;
+    }
   },
 
-  getCurrentUser: async () => {
-    // Return a default mock user
-    return {
-      id: "user1",
-      email: "test@example.com",
-      user_metadata: {
-        full_name: "Test User"
-      }
-    };
+  getUserDetails: async (userId: string, token: string): Promise<UserDetails | null> => {
+    try {
+      const response = await fetch(`${API_URL}/users/${userId}`, {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      });
+      if (!response.ok) return null;
+      return await response.json();
+    } catch (error) {
+      console.error("Error in getUserDetails:", error);
+      return null;
+    }
+  },
+
+  login: async (values: any) => {
+    const response = await fetch(`${API_URL}/auth/login`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        email: values.email,
+        password: values.password
+      })
+    });
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(errorData.detail || "Failed to log in.");
+    }
+    return await response.json(); // returns { access_token, token_type }
+  },
+
+  signup: async (values: any) => {
+    const response = await fetch(`${API_URL}/auth/signup`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        email: values.email,
+        password: values.password,
+        full_name: values.fullName
+      })
+    });
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(errorData.detail || "Failed to sign up.");
+    }
+    return await response.json(); // returns UserOut
   }
 };

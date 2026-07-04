@@ -4,7 +4,6 @@ import { Figtree } from 'next/font/google'
 import UserProvider from '@/providers/UserProvider';
 import ModalProvider from '@/providers/ModalProvider';
 import ToasterProvider from '@/providers/ToasterProvider';
-import getSongsByUserId from '@/actions/getSongsByUserId';
 import Player from '@/components/Player';
 
 const figtree = Figtree({ subsets: ['latin'] })
@@ -21,15 +20,14 @@ export default async function RootLayout({
 }: {
   children: React.ReactNode
 }) {
-  const userSongs = await getSongsByUserId();
-
   return (
     <html lang="en">
       <body className={ figtree.className }>
         <ToasterProvider />
         <UserProvider>
           <ModalProvider />
-          <SideBar songs={userSongs}>
+          {/* Library songs are fetched client-side in Library.tsx after the user authenticates */}
+          <SideBar songs={[]}>
             { children }
           </SideBar>
           <Player />
@@ -38,3 +36,4 @@ export default async function RootLayout({
     </html>
   )
 }
+
