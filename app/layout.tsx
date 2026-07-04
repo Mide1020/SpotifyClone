@@ -22,13 +22,13 @@ export default async function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body className={ figtree.className }>
+      <body className={figtree.className}>
         <ToasterProvider />
         <UserProvider>
           <ModalProvider />
           {/* Library songs are fetched client-side in Library.tsx after the user authenticates */}
           <SideBar songs={[]}>
-            { children }
+            {children}
           </SideBar>
           <Player />
         </UserProvider>
