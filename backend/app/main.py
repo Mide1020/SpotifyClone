@@ -3,7 +3,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 from contextlib import asynccontextmanager
 import os
-
+import app.models
 from app.core.config import settings
 from app.api.v1 import api_router
 from app.core.database import Base, engine
@@ -34,7 +34,11 @@ app = FastAPI(
 # Allows the frontend (Next.js on port 3000) to communicate with this backend (on port 8000).
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:3000", "http://127.0.0.1:3000"],
+    allow_origins=[
+        "http://localhost:3000",
+        "http://127.0.0.1:3000",
+        "https://spotify-clone-zeta-blue.vercel.app",
+    ],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
