@@ -1,0 +1,28 @@
+services:
+  - type: web
+    name: spotify-clone-api
+    runtime: python
+    rootDir: backend
+    buildCommand: "pip install -r requirements.txt"
+    startCommand: "uvicorn app.main:app --host 0.0.0.0 --port $PORT"
+    envVars:
+      - key: PROJECT_NAME
+        value: Spotify Clone API
+      - key: API_V1_STR
+        value: /api/v1
+      - key: SECRET_KEY
+        generateValue: true
+      - key: ALGORITHM
+        value: HS256
+      - key: ACCESS_TOKEN_EXPIRE_MINUTES
+        value: 11520
+      - key: DATABASE_URL
+        fromDatabase:
+          name: spotify-clone-db
+          property: connectionString
+
+databases:
+  - name: spotify-clone-db
+    databaseName: spotify_clone
+    user: spotify_user
+    plan: free
