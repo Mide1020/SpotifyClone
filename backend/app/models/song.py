@@ -2,8 +2,9 @@ from sqlalchemy import String, ForeignKey, DateTime, Column, Table
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from sqlalchemy.sql import func
 from app.core.database import Base
-from typing import List
-import User
+from typing import List, TYPE_CHECKING
+if TYPE_CHECKING:
+    from app.models.user import User
 # Association Table for Liked Songs (Many-to-Many between User and Song)
 # It records which users liked which songs, and when.
 liked_songs = Table(

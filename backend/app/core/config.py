@@ -56,6 +56,8 @@ class Settings(BaseSettings):
     def fix_database_url(cls, v: str) -> str:
         if v.startswith("postgres://"):
             v = v.replace("postgres://", "postgresql+asyncpg://", 1)
+        elif v.startswith("postgresql://"):
+            v = v.replace("postgresql://", "postgresql+asyncpg://", 1)
         return v
 
     model_config = SettingsConfigDict(
