@@ -36,6 +36,7 @@ cors_origins = [
     "http://localhost:3000",
     "http://127.0.0.1:3000",
     "https://spotify-clone-zeta-blue.vercel.app",
+    "https://ayomidespotify.netlify.app",
 ]
 
 # Allow specifying additional origins via environment variable (comma-separated)
@@ -46,7 +47,7 @@ if env_origins:
 app.add_middleware(
     CORSMiddleware,
     allow_origins=cors_origins,
-    allow_origin_regex=r"https://.*\.vercel\.app",
+    allow_origin_regex=r"https://.*\.(vercel|netlify)\.app",
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
