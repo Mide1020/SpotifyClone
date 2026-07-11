@@ -32,17 +32,25 @@ app = FastAPI(
 
 # CORS (Cross-Origin Resource Sharing) middleware configuration
 # Allows the frontend (Next.js on port 3000) to communicate with this backend (on port 8000).
+cors_origins = [
+    "http://localhost:3000",
+    "http://127.0.0.1:3000",
+    "https://spotify-clone-zeta-blue.vercel.app",
+]
+
+# Allow specifying additional origins via environment variable (comma-separated)
+env_origins = os.getenv("CORS_ORIGINS")
+if env_origins:
+    cors_origins.extend([origin.strip() for origin in env_origins.split(",") if origin.strip()])
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=[
-        "http://localhost:3000",
-        "http://127.0.0.1:3000",
-        "https://spotify-clone-zeta-blue.vercel.app",
-    ],
+    allow_origins=cors_origins,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
 
 # Ensure the upload directory path exists on disk
 os.makedirs("static", exist_ok=True)
